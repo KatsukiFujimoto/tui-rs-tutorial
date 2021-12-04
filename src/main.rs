@@ -2,14 +2,16 @@ use termion::raw::IntoRawMode;
 use tui::backend::TermionBackend;
 use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
-use tui::widgets::{Block, BorderType, Borders};
+use tui::symbols::DOT;
+use tui::text::Spans;
+use tui::widgets::{Block, BorderType, Borders, Tabs};
 use tui::Terminal;
 
 fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    block_sample(terminal);
+    tabs_sample(terminal);
     Ok(())
 }
 
@@ -62,5 +64,23 @@ fn block_sample(
         f.render_widget(block.clone(), rendering_areas_left[1]);
         f.render_widget(block.clone(), rendering_areas_right[0]);
         f.render_widget(block.clone(), rendering_areas_right[1]);
+    });
+}
+
+fn tabs_sample(mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>) {
+    let _ = terminal.draw(|f| {
+        let titles: Vec<Spans> = ["Tab1", "Tab2", "Tab3", "Tab4"]
+            .iter()
+            .cloned()
+            .map(Spans::from)
+            .collect();
+        let tabs = Tabs::new(titles)
+            .block(Block::default().title("Tabs").borders(Borders::ALL))
+            .select(1)
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().fg(Color::Yellow))
+            .divider(DOT);
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(tabs, rendering_area);
     });
 }
