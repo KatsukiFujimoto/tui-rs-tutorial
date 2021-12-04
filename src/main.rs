@@ -6,8 +6,8 @@ use tui::symbols::Marker::{Braille, Dot};
 use tui::symbols::DOT;
 use tui::text::{Span, Spans};
 use tui::widgets::{
-    Axis, Block, BorderType, Borders, Cell, Chart, Dataset, GraphType, List, ListItem, Paragraph,
-    Row, Table, Tabs, Wrap,
+    Axis, BarChart, Block, BorderType, Borders, Cell, Chart, Dataset, GraphType, List, ListItem,
+    Paragraph, Row, Table, Tabs, Wrap,
 };
 use tui::Terminal;
 
@@ -15,7 +15,7 @@ fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    chart_sample(terminal);
+    bar_chart_sample(terminal);
     Ok(())
 }
 
@@ -232,5 +232,23 @@ fn chart_sample(
             );
         let rendering_area = Rect::new(0, 0, 50, 10);
         f.render_widget(chart, rendering_area);
+    });
+}
+
+fn bar_chart_sample(
+    mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>,
+) {
+    let _ = terminal.draw(|f| {
+        let bar_chart = BarChart::default()
+            .block(Block::default().title("BarChart").borders(Borders::ALL))
+            .bar_width(3)
+            .bar_gap(1)
+            .bar_style(Style::default().fg(Color::Yellow).bg(Color::Red))
+            .value_style(Style::default().fg(Color::Red).add_modifier(Modifier::BOLD))
+            .label_style(Style::default().fg(Color::White))
+            .data(&[("B0", 0), ("B1", 2), ("B2", 4), ("B3", 3)])
+            .max(4);
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(bar_chart, rendering_area);
     });
 }
