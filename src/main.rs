@@ -7,7 +7,7 @@ use tui::symbols::DOT;
 use tui::text::{Span, Spans};
 use tui::widgets::{
     Axis, BarChart, Block, BorderType, Borders, Cell, Chart, Dataset, Gauge, GraphType, List,
-    ListItem, Paragraph, Row, Table, Tabs, Wrap,
+    ListItem, Paragraph, Row, Sparkline, Table, Tabs, Wrap,
 };
 use tui::Terminal;
 
@@ -15,7 +15,7 @@ fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    gauge_sample(terminal);
+    sparkline_sample(terminal);
     Ok(())
 }
 
@@ -268,5 +268,18 @@ fn gauge_sample(
             .percent(20);
         let rendering_area = Rect::new(0, 0, 50, 10);
         f.render_widget(gauge, rendering_area);
+    });
+}
+fn sparkline_sample(
+    mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>,
+) {
+    let _ = terminal.draw(|f| {
+        let sparkline = Sparkline::default()
+            .block(Block::default().title("Sparkline").borders(Borders::ALL))
+            .data(&[0, 2, 3, 4, 1, 4, 10])
+            .max(5)
+            .style(Style::default().fg(Color::Red).bg(Color::White));
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(sparkline, rendering_area);
     });
 }
