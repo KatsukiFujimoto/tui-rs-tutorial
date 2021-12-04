@@ -6,8 +6,8 @@ use tui::symbols::Marker::{Braille, Dot};
 use tui::symbols::DOT;
 use tui::text::{Span, Spans};
 use tui::widgets::{
-    Axis, BarChart, Block, BorderType, Borders, Cell, Chart, Dataset, Gauge, GraphType, List,
-    ListItem, Paragraph, Row, Sparkline, Table, Tabs, Wrap,
+    Axis, BarChart, Block, BorderType, Borders, Cell, Chart, Clear, Dataset, Gauge, GraphType,
+    List, ListItem, Paragraph, Row, Sparkline, Table, Tabs, Wrap,
 };
 use tui::Terminal;
 
@@ -15,7 +15,7 @@ fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    sparkline_sample(terminal);
+    clear_sample(terminal);
     Ok(())
 }
 
@@ -281,5 +281,16 @@ fn sparkline_sample(
             .style(Style::default().fg(Color::Red).bg(Color::White));
         let rendering_area = Rect::new(0, 0, 50, 10);
         f.render_widget(sparkline, rendering_area);
+    });
+}
+
+fn clear_sample(
+    mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>,
+) {
+    let _ = terminal.draw(|f| {
+        let block = Block::default().title("Block").borders(Borders::ALL);
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(block, rendering_area); // now render the block widget
+        f.render_widget(Clear, rendering_area); // <- this will clear/reset the area
     });
 }
