@@ -6,8 +6,8 @@ use tui::symbols::Marker::{Braille, Dot};
 use tui::symbols::DOT;
 use tui::text::{Span, Spans};
 use tui::widgets::{
-    Axis, BarChart, Block, BorderType, Borders, Cell, Chart, Dataset, GraphType, List, ListItem,
-    Paragraph, Row, Table, Tabs, Wrap,
+    Axis, BarChart, Block, BorderType, Borders, Cell, Chart, Dataset, Gauge, GraphType, List,
+    ListItem, Paragraph, Row, Table, Tabs, Wrap,
 };
 use tui::Terminal;
 
@@ -15,7 +15,7 @@ fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    bar_chart_sample(terminal);
+    gauge_sample(terminal);
     Ok(())
 }
 
@@ -250,5 +250,23 @@ fn bar_chart_sample(
             .max(4);
         let rendering_area = Rect::new(0, 0, 50, 10);
         f.render_widget(bar_chart, rendering_area);
+    });
+}
+
+fn gauge_sample(
+    mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>,
+) {
+    let _ = terminal.draw(|f| {
+        let gauge = Gauge::default()
+            .block(Block::default().borders(Borders::ALL).title("Progress"))
+            .gauge_style(
+                Style::default()
+                    .fg(Color::White)
+                    .bg(Color::Black)
+                    .add_modifier(Modifier::ITALIC),
+            )
+            .percent(20);
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(gauge, rendering_area);
     });
 }
