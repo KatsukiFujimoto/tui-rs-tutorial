@@ -4,14 +4,14 @@ use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::symbols::DOT;
 use tui::text::Spans;
-use tui::widgets::{Block, BorderType, Borders, Tabs};
+use tui::widgets::{Block, BorderType, Borders, List, ListItem, Tabs};
 use tui::Terminal;
 
 fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    tabs_sample(terminal);
+    list_sample(terminal);
     Ok(())
 }
 
@@ -82,5 +82,22 @@ fn tabs_sample(mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<s
             .divider(DOT);
         let rendering_area = Rect::new(0, 0, 50, 10);
         f.render_widget(tabs, rendering_area);
+    });
+}
+
+fn list_sample(mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>) {
+    let _ = terminal.draw(|f| {
+        let items = [
+            ListItem::new("Item 1"),
+            ListItem::new("Item 2"),
+            ListItem::new("Item 3"),
+        ];
+        let list = List::new(items)
+            .block(Block::default().title("List").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White))
+            .highlight_style(Style::default().add_modifier(Modifier::ITALIC))
+            .highlight_symbol(">>");
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(list, rendering_area);
     });
 }
