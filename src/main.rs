@@ -4,14 +4,16 @@ use tui::layout::{Alignment, Constraint, Direction, Layout, Rect};
 use tui::style::{Color, Modifier, Style};
 use tui::symbols::DOT;
 use tui::text::{Span, Spans};
-use tui::widgets::{Block, BorderType, Borders, Cell, List, ListItem, Row, Table, Tabs};
+use tui::widgets::{
+    Block, BorderType, Borders, Cell, List, ListItem, Paragraph, Row, Table, Tabs, Wrap,
+};
 use tui::Terminal;
 
 fn main() -> Result<(), std::io::Error> {
     let stdout = std::io::stdout().into_raw_mode()?;
     let backend = TermionBackend::new(stdout);
     let terminal = Terminal::new(backend)?;
-    table_sample(terminal);
+    paragraph_sample(terminal);
     Ok(())
 }
 
@@ -155,5 +157,27 @@ fn table_sample(
         .highlight_symbol(">>");
         let rendering_area = Rect::new(0, 0, 50, 10);
         f.render_widget(table, rendering_area);
+    });
+}
+
+fn paragraph_sample(
+    mut terminal: Terminal<TermionBackend<termion::raw::RawTerminal<std::io::Stdout>>>,
+) {
+    let _ = terminal.draw(|f| {
+        let text = vec![
+            Spans::from(vec![
+                Span::raw("First"),
+                Span::styled("line", Style::default().add_modifier(Modifier::ITALIC)),
+                Span::raw("."),
+            ]),
+            Spans::from(Span::styled("Second line", Style::default().fg(Color::Red))),
+        ];
+        let paragraph = Paragraph::new(text)
+            .block(Block::default().title("Paragraph").borders(Borders::ALL))
+            .style(Style::default().fg(Color::White).bg(Color::Black))
+            .alignment(Alignment::Center)
+            .wrap(Wrap { trim: true });
+        let rendering_area = Rect::new(0, 0, 50, 10);
+        f.render_widget(paragraph, rendering_area);
     });
 }
