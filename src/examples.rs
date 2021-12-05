@@ -1,1 +1,10 @@
+pub mod widget_bar_chart;
 pub mod widget_block;
+pub mod widget_chart;
+pub mod widget_clear;
+pub mod widget_gauge;
+pub mod widget_list;
+pub mod widget_paragraph;
+pub mod widget_sparkline;
+pub mod widget_table;
+pub mod widget_tabs;
